@@ -10,7 +10,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ## 0. Set up
-```{r}
+```{r warning = FALSE, message = FALSE}
 library(glmmTMB) # to get the Salamanders dataset
 library(tidyverse) # to make your life easier
 library(gt) # to render a table
@@ -19,7 +19,7 @@ data(Salamanders)
 
 ## OPTIONAL ##
 library(remotes) # to install the dataset
-remotes::install_github("allisonhorst/palmerpenguins") # example dataset
+# remotes::install_github("allisonhorst/palmerpenguins") # example dataset
 library(palmerpenguins)
 ```
 
@@ -29,7 +29,7 @@ Information taken from Kyle Edwards lectures [15](https://drive.google.com/file/
 
 Model selection will help answer questions/address hypotheses like these:
 
-```{r include = FALSE}
+```{r echo = FALSE}
 q_h <- tribble(
   ~Question, ~Hypothesis,
   "1. I have multiple models representing distinct hypotheses; which is best supported by the data?", "Different models represent different hypotheses.",
@@ -65,6 +65,8 @@ $$
 where $n$ is your sample size. As $n$ gets large relative to $K$, the second term gets closer to $2K$, as in the normal AIC. When $n$ is small relative to $K$, the second term is larger than $2K$, which penalizes more complex models more strongly.
 
 ## 3. How to use the AIC
+
+### Penguins
 It is... very easy to use the AIC. The `AIC()` function is in baseR. Hooray! As an example, we're going to use the `penguins` dataset from the Palmer Station LTER in Antarctica, coded up for our using pleasure by [Allison Horst](https://github.com/allisonhorst/palmerpenguins)!
 
 ```{r echo = FALSE}
@@ -75,7 +77,7 @@ These data are measurements of individual penguins of three different species (A
 
 Let's start by visualizing the data, with body mass in grams as a function of flipper length.
 
-```{r include = FALSE}
+```{r echo = FALSE, warning = FALSE}
 penguins_plot <- ggplot(penguins, aes(x = flipper_length_mm, y = body_mass_g, color = species)) +
   geom_point(size = 2.5, alpha = 0.8) +
   scale_color_manual(values = c("#E29244", "#4CA49E", "#6B6D9F")) +
@@ -88,26 +90,33 @@ penguins_plot
 
 Let's say we're interested in body mass is influenced by these parameters. We come up with linear models to describe these relationships. In Kyle Edwards's framework, we are doing 3) exploratory analysis.  
 
+### a. Linear models
+
 We start by looking at the linear models for a few combinations of parameters, and calculating their AIC values.
 
 ```{r}
 peng_lm1 <- lm(body_mass_g ~ flipper_length_mm, data = penguins)
 AIC(peng_lm1)
 
-peng_lm2 <- lm(body_mass_g ~ flipper_length_mm + bill_length_mm, data = penguins)
+peng_lm2 <- lm(body_mass_g ~ flipper_length_mm + bill_depth_mm, data = penguins)
 AIC(peng_lm2)
 
-peng_lm4 <- lm(body_mass_g ~ flipper_length_mm + bill_depth_mm, data = penguins)
+peng_lm3 <- lm(body_mass_g ~ flipper_length_mm + sex, data = penguins)
+AIC(peng_lm3)
+
+peng_lm4 <- lm(body_mass_g ~ flipper_length_mm + sex + bill_depth_mm, data = penguins)
 AIC(peng_lm4)
-
-peng_lm5 <- lm(body_mass_g ~ flipper_length_mm + sex, data = penguins)
-AIC(peng_lm5)
-
-peng_lm6 <- lm(body_mass_g ~ flipper_length_mm + sex + bill_depth_mm, data = penguins)
-AIC(peng_lm6)
 ```
 
-With these models, the best is `peng_lm6`, which has the lowest AIC value of `r AIC(peng_lm6)`. 
+### b. Choosing between models
+
+Between these models, the best is `peng_lm4`, which has the lowest AIC value of `r round(AIC(peng_lm4), 2)`. There's a big jump in AIC values once we consider penguin sex, but what about comparing `peng_lm3` and `peng_lm4`?  
+
+We can calculate the difference between AIC values using
+$$
+\Delta_i = AIC_i - AIC_{min}
+$$
+where $AIC_{min}$ is the smallest AIC value being compared (in this case, `r round(AIC(peng_lm4), 2)`), and $AIC_i$ is the AIC value for the model you want to compare (in this case, the AIC value for `peng_lm3` is `r round(AIC(peng_lm3), 2)`). Therefore, the $\Delta_i$ is `r round(AIC(peng_lm4)-AIC(peng_lm3), 2)`.
 
 
 
