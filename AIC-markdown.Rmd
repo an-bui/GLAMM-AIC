@@ -107,30 +107,28 @@ Let's say we're interested in body mass is influenced by these parameters. We co
 We start by looking at the linear models for a few combinations of parameters, and calculating their AIC values.
 
 ```{r}
-peng_lm1 <- lm(body_mass_g ~ flipper_length_mm, data = penguins)
+# all predictors
+peng_lm1 <- lm(body_mass_g ~ flipper_length_mm + bill_depth_mm + bill_length_mm + sex + species + island + year, data = penguins)
 AIC(peng_lm1)
 
-peng_lm2 <- lm(body_mass_g ~ flipper_length_mm + bill_depth_mm, data = penguins)
+# 5 predictors
+peng_lm2 <- lm(body_mass_g ~ flipper_length_mm + bill_depth_mm + bill_length_mm + sex + species, data = penguins)
 AIC(peng_lm2)
 
-peng_lm3 <- lm(body_mass_g ~ flipper_length_mm + sex, data = penguins)
+# 4 predictors
+peng_lm3 <- lm(body_mass_g ~ flipper_length_mm + bill_depth_mm + sex + species, data = penguins)
 AIC(peng_lm3)
-
-peng_lm4 <- lm(body_mass_g ~ flipper_length_mm + sex + bill_depth_mm, data = penguins)
-AIC(peng_lm4)
 ```
 
 ### b. Choosing between models
 
-Between these models, the best is `peng_lm4`, which has the lowest AIC value of `r round(AIC(peng_lm4), 2)`. There's a big jump in AIC values once we consider penguin sex, but what about comparing `peng_lm3` and `peng_lm4`?  
-
-We can calculate the difference between AIC values using
+Between these models, the best is `peng_lm2`, which has the lowest AIC value of `r round(AIC(peng_lm2), 2)`. We can calculate the difference between AIC values using
 $$
 \Delta_i = AIC_i - AIC_{min}
 $$
-where $AIC_{min}$ is the smallest AIC value being compared (in this case, `r round(AIC(peng_lm4), 2)`), and $AIC_i$ is the AIC value for the model you want to compare (in this case, the AIC value for `peng_lm3` is `r round(AIC(peng_lm3), 2)`). Therefore, the $\Delta_i$ is `r round(AIC(peng_lm3)-AIC(peng_lm4), 2)`.
+where $AIC_{min}$ is the smallest AIC value being compared (in this case, `r round(AIC(peng_lm2), 2)`), and $AIC_i$ is the AIC value for the model you want to compare (in this case, the AIC value for `peng_lm3` is `r round(AIC(peng_lm3), 2)`). Therefore, the $\Delta_i$ is `r round(AIC(peng_lm3)-AIC(peng_lm2), 2)`.
 
-The difference between these two models is large enough such that we could say that `peng_lm3` is still the best model to describe the data, and not both `peng_lm3` and `peng_lm4`. If you have two models with similar AIC values, people generally use this rule to evaluate how much those models support your data _together_:
+However, the AIC value for `peng_lm1` is pretty close to the AIC value for `peng_lm2`. If you have two models with similar AIC values, people generally use this rule to evaluate how much those models support your data _together_:
 ```{r echo = FALSE}
 support <- tribble(
   ~Delta, ~'Level of empirical support for Model i',
@@ -146,7 +144,7 @@ support <- tribble(
 support
 ```
 
-Following these rules, `peng_lm3` is too different (i.e. the $\Delta_i$ value is greater than 10) to have comparable support from the data as `peng_lm4`.
+How can we be sure that `peng_lm2` is the best, most simple model that describes the data?
 
 ### c. Relative support for each model
 
@@ -163,20 +161,18 @@ where $R$ is the number of models in the set, and $w_i$ is the probability that 
 If we calculate $\Delta_i$ and $w_i$, we can compare the models.
 
 ```{r}
-# calculate deltai
-delta1 <- exp(-0.5*(AIC(peng_lm1) - AIC(peng_lm4)))
-delta2 <- exp(-0.5*(AIC(peng_lm2) - AIC(peng_lm4)))
-delta3 <- exp(-0.5*(AIC(peng_lm3) - AIC(peng_lm4)))
-delta4 <- exp(-0.5*(AIC(peng_lm4) - AIC(peng_lm4)))
+# calculate deltai2
+delta1 <- exp(-0.5*(AIC(peng_lm1) - AIC(peng_lm2)))
+delta2 <- exp(-0.5*(AIC(peng_lm2) - AIC(peng_lm2)))
+delta3 <- exp(-0.5*(AIC(peng_lm3) - AIC(peng_lm2)))
 
 # sum likelihoods
-sum_likes <- sum(c(delta1, delta2, delta3, delta4))
+sum_likes <- sum(c(delta1, delta2, delta3))
 
 # calculate weights
 weight1 <- delta1/sum_likes
 weight2 <- delta2/sum_likes
 weight3 <- delta3/sum_likes
-weight4 <- delta4/sum_likes
 ```
 
 ```{r echo = FALSE}
@@ -185,7 +181,6 @@ weights <- tribble(
   "peng_lm1", round(delta1, 2), round(weight1, 2),
   "peng_lm2", round(delta2, 2), round(weight2, 2),
   "peng_lm3", round(delta3, 2), round(weight3, 2),
-  "peng_lm4", round(delta4, 2), round(weight4, 2)
 ) %>% 
   gt() %>% 
   tab_style(
@@ -195,7 +190,7 @@ weights <- tribble(
 weights
 ```
 
-Because the $\Delta_i$ values are so small, the weights are also small. From this, we can get information that we already knew: `peng_lm4` is the best model, and all the other models are not at all likely to be as good as `peng_lm4`. However, knowing how to calculate weights is _very_ important when you have a few different models with similar AIC values that you want to be able to compare.
+From this, we can say that `peng_lm2` has the highest weight, but that there's a 35% chance that `peng_lm1` is the best model, and that there is a 6% chance that `peng_lm3` is the best model. 
 
 
 
