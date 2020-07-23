@@ -1,0 +1,18 @@
+---
+title: "Model Selection with AIC"
+author: "An Bui, Ana Sofia Guerra"
+date: "7/23/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## 0. Set up
+```{r}
+library(glmmTMB) # to get the Salamanders dataset
+
+data(Salamanders)
+```
+
