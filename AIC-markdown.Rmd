@@ -61,7 +61,7 @@ $$
 where $L(\hat{\theta}|Y)$ is the likelihood of fitted parameters $\hat{\theta}$ given the data $Y$, and $K$ is the number of parameters in the model. The AIC number estimates the relative information lost in a particular model. The best model has the smallest AIC number. **NOTE:** having one AIC number (i.e. one model) is meaningless. The AIC works by comparing AIC numbers with others; therefore, one number doesn't mean anything on its own.  
 
 ### Bias-corrected AICc:
-If your sample size is small (note: this is what Kyle Edwards writes... unsure what constitutes "small"), you can use the bias-corrected AICc (AIC correction) formulated by (Nariaki Sugiura)[https://doi.org/10.1080/03610927808827599]:
+If your sample size is small (n < 40ish), you can use the bias-corrected AICc (AIC correction) formulated by (Nariaki Sugiura)[https://doi.org/10.1080/03610927808827599]:
 $$
 AICc = -2*log(L(\hat{\theta}|Y)) + 2K(\frac{n}{n - K - 1})
 $$
