@@ -37,8 +37,15 @@ data. How do I construct model(s) to choose among them and quantify their import
 q_h
 ```
 
+### Why not throw all your model parameters in and see what happens?  
+While tempting, this is a problem for a couple of reasons.  
+1. Your predictors might be **correlated** meaning that predictors are dependent on each other, and their effects on model outputs are driven by how much they are related to each other.  
+2. You may have **parameter uncertainty** meaning that as you add more predictors to your model, the less each predictor explains of the model variation. There is only _so much_ variation to be explained by predictors, and if you put more into your model, the variation attributed to any one predictor will get smaller with more predictors.
+
 ## 2. Akaike Information Criterion (AIC)
 
-The AIC is a 
+The AIC was created by [Hirotugu Akaike](https://www.ism.ac.jp/akaikememorial/index-e.html), and is a quantitative way to compare regression models. The AIC takes into account how well the model predicts the data _and_ increasing complexity. In general, the best model "compromises" between these two and strikes a balance between prediction and complexity (i.e. number of explanatory variables). **The best model is given the _lowest_ AIC value.**  
+
+
 
 
