@@ -14,6 +14,7 @@ knitr::opts_chunk$set(echo = TRUE)
 library(glmmTMB) # to get the Salamanders dataset
 library(tidyverse) # to make your life easier
 library(gt) # to render a table
+library(patchwork) # to put plots together
 
 data(Salamanders)
 
@@ -61,7 +62,7 @@ $$
 where $L(\hat{\theta}|Y)$ is the likelihood of fitted parameters $\hat{\theta}$ given the data $Y$, and $K$ is the number of parameters in the model. The AIC number estimates the relative information lost in a particular model. The best model has the smallest AIC number. **NOTE:** having one AIC number (i.e. one model) is meaningless. The AIC works by comparing AIC numbers with others; therefore, one number doesn't mean anything on its own.  
 
 ### Bias-corrected AICc:
-If your sample size is small (n < 40ish), you can use the bias-corrected AICc (AIC correction) formulated by [Nariaki Sugiura](https://doi.org/10.1080/03610927808827599:
+If your sample size is small (n < 40ish), you can use the bias-corrected AICc (AIC correction) formulated by [Nariaki Sugiura](https://doi.org/10.1080/03610927808827599):
 $$
 AICc = -2*log(L(\hat{\theta}|Y)) + 2K(\frac{n}{n - K - 1})
 $$
@@ -78,17 +79,25 @@ data(penguins)
 
 These data are measurements of individual penguins of three different species (Adelie, Chinstrap, and Gentoo) from three different islands. Data were taken on bill length (mm), bill depth (mm), flipper length (mm), body mass (g), and sex (male or female), for two years.
 
-Let's start by visualizing the data, with body mass in grams as a function of flipper length.
+Let's start by visualizing the data for fun, with body mass in grams as a function of two different measurements.
 
-```{r echo = FALSE, warning = FALSE}
-penguins_plot <- ggplot(penguins, aes(x = flipper_length_mm, y = body_mass_g, color = species)) +
+```{r echo = FALSE, warning = FALSE, fig.align = 'center'}
+flipper_plot <- ggplot(penguins, aes(x = flipper_length_mm, y = body_mass_g, color = species)) +
   geom_point(size = 2.5, alpha = 0.8) +
   scale_color_manual(values = c("#E29244", "#4CA49E", "#6B6D9F")) +
   theme_bw() +
-  labs(x = "Flipper length (mm)", y = "Body mass (g)", title = "Palmer Penguins", color = "Species") +
-  theme(legend.position = c(0.15, 0.75))
+  labs(x = "Flipper length (mm)", y = "Body mass (g)", title = "Flipper length", color = "Species") +
+  theme(legend.position = c(0.2, 0.75))
 
-penguins_plot
+bd_plot <- ggplot(penguins, aes(x = bill_depth_mm, y = body_mass_g, color = species)) +
+  geom_point(size = 2.5, alpha = 0.85) +
+  scale_color_manual(values = c("#E29244", "#4CA49E", "#6B6D9F")) +
+  theme_bw() +
+  labs(x = "Bill depth (mm)", y = "Body mass (g)", title = "Bill depth", color = "Species") +
+  theme(legend.position = "none")
+
+grid <- flipper_plot + bd_plot
+grid
 ```
 
 Let's say we're interested in body mass is influenced by these parameters. We come up with linear models to describe these relationships. In Kyle Edwards's framework, we are doing 3) exploratory analysis.  
