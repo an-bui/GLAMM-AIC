@@ -12,7 +12,33 @@ knitr::opts_chunk$set(echo = TRUE)
 ## 0. Set up
 ```{r}
 library(glmmTMB) # to get the Salamanders dataset
+library(tidyverse)
+library(gt)
 
 data(Salamanders)
 ```
+
+Information taken from Kyle Edwards lectures [15](https://drive.google.com/file/d/0B5QCuGKrabF5ZzFyQ3VXaWNVRXM/view) and [16](https://drive.google.com/file/d/0B5QCuGKrabF5RzYxSEZuc0xoaVU/view) and Allison Horst's [ESM 206 class](https://github.com/allisonhorst/esm-206-lab-9).
+
+## 1. What is model selection?
+
+Model selection will help answer questions/address hypotheses like these:
+
+```{r include = FALSE}
+q_h <- tribble(
+  ~Question, ~Hypothesis,
+  "1. I have multiple models representing distinct hypotheses; which is best supported by the data?", "Different models represent different hypotheses.",
+  "2. I have a set of predictors that are all hypothesized to be important for the response. Which are supported by the data? What is their relative importance? Should all be included in a single model, or should a smaller model of ‘significant’ predictors be used? How should such a smaller model be chosen?", "Different predictors represent different hypotheses (but a particular model could include one or more predictors)",
+  "3. I have a large number of predictors that may or may not be important, and I want to do an exploratory analysis to see which are best supported by the
+data. How do I construct model(s) to choose among them and quantify their importance?", "Not a hypothesis! Exploratory analysis / data mining / data dredging (not comparing a priori hypotheses, sifting for relationships)."
+) %>% 
+  gt()
+
+q_h
+```
+
+## 2. Akaike Information Criterion (AIC)
+
+The AIC is a 
+
 
