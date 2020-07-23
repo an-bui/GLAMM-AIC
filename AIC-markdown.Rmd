@@ -71,19 +71,43 @@ It is... very easy to use the AIC. The `AIC()` function is in baseR. Hooray! As 
 data(penguins)
 ```
 
-Let's start by visualizing the data.
+These data are measurements of individual penguins of three different species (Adelie, Chinstrap, and Gentoo) from three different islands. Data were taken on bill length (mm), bill depth (mm), flipper length (mm), body mass (g), and sex (male or female), for two years.
+
+Let's start by visualizing the data, with body mass in grams as a function of flipper length.
 
 ```{r include = FALSE}
-penguins_plot <- ggplot(penguins, aes(x = flipper_length_mm, y = body_mass_g, color = island)) +
-  geom_point(size = 2) +
+penguins_plot <- ggplot(penguins, aes(x = flipper_length_mm, y = body_mass_g, color = species)) +
+  geom_point(size = 2.5, alpha = 0.8) +
   scale_color_manual(values = c("#E29244", "#4CA49E", "#6B6D9F")) +
   theme_bw() +
-  labs(x = "Flipper length (mm)", y = "Body mass (g)", title = "Palmer Penguins", color = "Island") +
+  labs(x = "Flipper length (mm)", y = "Body mass (g)", title = "Palmer Penguins", color = "Species") +
   theme(legend.position = c(0.15, 0.75))
 
 penguins_plot
 ```
 
+Let's say we're interested in body mass is influenced by these parameters. We come up with linear models to describe these relationships. In Kyle Edwards's framework, we are doing 3) exploratory analysis.  
+
+We start by looking at the linear models for a few combinations of parameters, and calculating their AIC values.
+
+```{r}
+peng_lm1 <- lm(body_mass_g ~ flipper_length_mm, data = penguins)
+AIC(peng_lm1)
+
+peng_lm2 <- lm(body_mass_g ~ flipper_length_mm + bill_length_mm, data = penguins)
+AIC(peng_lm2)
+
+peng_lm4 <- lm(body_mass_g ~ flipper_length_mm + bill_depth_mm, data = penguins)
+AIC(peng_lm4)
+
+peng_lm5 <- lm(body_mass_g ~ flipper_length_mm + sex, data = penguins)
+AIC(peng_lm5)
+
+peng_lm6 <- lm(body_mass_g ~ flipper_length_mm + sex + bill_depth_mm, data = penguins)
+AIC(peng_lm6)
+```
+
+With these models, the best is `peng_lm6`, which has the lowest AIC value of `r AIC(peng_lm6)`. 
 
 
 
