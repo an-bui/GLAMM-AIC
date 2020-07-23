@@ -15,6 +15,8 @@ library(glmmTMB) # to get the Salamanders dataset
 library(tidyverse) # to make your life easier
 library(gt) # to render a table
 library(patchwork) # to put plots together
+library(effects) #install.packages("effects")
+
 
 data(Salamanders)
 
@@ -238,16 +240,33 @@ There doesn't appear to be any strong correlations between predictors here, so w
 
 #### b. Choosing the best model
 
-##### i. fitting one model with all the predictors
-
-"All these effects are probably real, though some will be stronger and some weaker." Then you can test each predictor using LRT. 
-
+This is our model:
 ```{r}
-huge.model <- glm(count ~ site + sample + cover + mined + DOP + DOY + Wtemp, data=Salamanders, family="poisson")
+big.model <- glm(count ~ site + sample + cover + mined + DOP + DOY + Wtemp, data=Salamanders, family="poisson", na.action = na.pass)
+#na.action=na.pass is necessary for the building-all-models function
 ```
 
+We could manually include every possible combination of factors, but no one has that kind of time. Luckily, there's a package that is here to help! 
+
+For this, we use the package `MuMIn` which is useful for excluding/including each predictor when you're dealing with a model that has many predictors. 
+
 ```{r}
-plot(allEffects(huge.model))
+library(MuMIn) #install.packages("MuMIn")
 ```
+
+
+```{r}
+sal.dredge <- dredge(big.model)
+#this makes all the possible models that are subsets of big.model
+```
+
+Now let's look at all our models using `model.sel(sal.dredge)`. It's a huge table so we have filtered. out to show only models that have $\Delta$ AIC < 3. 
+```{r}
+model.sel(sal.dredge) %>% filter(delta < 3) %>% 
+  gt() %>% 
+  tab_header(title="all model subsets",
+             subtitle = "count ~ site + sample + cover + mined + DOP               + DOY + Wtemp")
+```
+They're ranked by AICc 
 
 
