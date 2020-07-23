@@ -186,7 +186,7 @@ weights <- tribble(
 weights
 ```
 
-Because the $\Delta_i$ values are so small, the weights are also small. From this, we can get information that we already knew: `peng_lm4` is the best model, and all the other models are not at all likely to be as good as `peng_lm4`. Yay!
+Because the $\Delta_i$ values are so small, the weights are also small. From this, we can get information that we already knew: `peng_lm4` is the best model, and all the other models are not at all likely to be as good as `peng_lm4`. However, knowing how to calculate weights is _very_ important when you have a few different models with similar AIC values that you want to be able to compare.
 
 
 
