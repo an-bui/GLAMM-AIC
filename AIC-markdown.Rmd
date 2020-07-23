@@ -44,8 +44,12 @@ While tempting, this is a problem for a couple of reasons.
 
 ## 2. Akaike Information Criterion (AIC)
 
-The AIC was created by [Hirotugu Akaike](https://www.ism.ac.jp/akaikememorial/index-e.html), and is a quantitative way to compare regression models. The AIC takes into account how well the model predicts the data _and_ increasing complexity. In general, the best model "compromises" between these two and strikes a balance between prediction and complexity (i.e. number of explanatory variables). **The best model is given the _lowest_ AIC value.**  
+The AIC was created by [Hirotugu Akaike](https://www.ism.ac.jp/akaikememorial/index-e.html), and is a quantitative way to compare regression models. The AIC takes into account how well the model predicts the data _and_ increasing complexity. In general, the best model "compromises" between these two and strikes a balance between prediction and complexity (i.e. number of explanatory variables). 
 
-
+We know that models only approximate reality, but we want to know which model approximates reality the _best_. With the AIC, we are quantifying the relative information loss of different models. The formula to do so is:
+$$
+AIC = -2*log(L(\hat{\theta}|Y)) + 2K
+$$
+where $L(\hat{\theta}|Y)$ is the likelihood of fitted parameters $\hat{\theta}$ given the data $Y$, and $K$ is the number of parameters in the model. The AIC number estimates the relative information lost in a particular model. The best model has the smallest AIC number. **NOTE:** having one AIC number (i.e. one model) is meaningless. The AIC works by comparing AIC numbers with others; therefore, one number doesn't mean anything on its own.
 
 
