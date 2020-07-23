@@ -12,10 +12,15 @@ knitr::opts_chunk$set(echo = TRUE)
 ## 0. Set up
 ```{r}
 library(glmmTMB) # to get the Salamanders dataset
-library(tidyverse)
-library(gt)
+library(tidyverse) # to make your life easier
+library(gt) # to render a table
 
 data(Salamanders)
+
+## OPTIONAL ##
+library(remotes) # to install the dataset
+remotes::install_github("allisonhorst/palmerpenguins") # example dataset
+library(palmerpenguins)
 ```
 
 Information taken from Kyle Edwards lectures [15](https://drive.google.com/file/d/0B5QCuGKrabF5ZzFyQ3VXaWNVRXM/view) and [16](https://drive.google.com/file/d/0B5QCuGKrabF5RzYxSEZuc0xoaVU/view) and Allison Horst's [ESM 206 class](https://github.com/allisonhorst/esm-206-lab-9).
@@ -50,6 +55,40 @@ We know that models only approximate reality, but we want to know which model ap
 $$
 AIC = -2*log(L(\hat{\theta}|Y)) + 2K
 $$
-where $L(\hat{\theta}|Y)$ is the likelihood of fitted parameters $\hat{\theta}$ given the data $Y$, and $K$ is the number of parameters in the model. The AIC number estimates the relative information lost in a particular model. The best model has the smallest AIC number. **NOTE:** having one AIC number (i.e. one model) is meaningless. The AIC works by comparing AIC numbers with others; therefore, one number doesn't mean anything on its own.
+where $L(\hat{\theta}|Y)$ is the likelihood of fitted parameters $\hat{\theta}$ given the data $Y$, and $K$ is the number of parameters in the model. The AIC number estimates the relative information lost in a particular model. The best model has the smallest AIC number. **NOTE:** having one AIC number (i.e. one model) is meaningless. The AIC works by comparing AIC numbers with others; therefore, one number doesn't mean anything on its own.  
+
+### Bias-corrected AICc:
+If your sample size is small (note: this is what Kyle Edwards writes... unsure what constitutes "small"), you can use the bias-corrected AICc (AIC correction) formulated by (Nariaki Sugiura)[https://doi.org/10.1080/03610927808827599]:
+$$
+AICc = -2*log(L(\hat{\theta}|Y)) + 2K(\frac{n}{n - K - 1})
+$$
+where $n$ is your sample size. As $n$ gets large relative to $K$, the second term gets closer to $2K$, as in the normal AIC. When $n$ is small relative to $K$, the second term is larger than $2K$, which penalizes more complex models more strongly.
+
+## 3. How to use the AIC
+It is... very easy to use the AIC. The `AIC()` function is in baseR. Hooray! As an example, we're going to use the `penguins` dataset from the Palmer Station LTER in Antarctica, coded up for our using pleasure by [Allison Horst](https://github.com/allisonhorst/palmerpenguins)!
+
+```{r echo = FALSE}
+data(penguins)
+```
+
+Let's start by visualizing the data.
+
+```{r include = FALSE}
+penguins_plot <- ggplot(penguins, aes(x = flipper_length_mm, y = body_mass_g, color = island)) +
+  geom_point(size = 2) +
+  scale_color_manual(values = c("#E29244", "#4CA49E", "#6B6D9F")) +
+  theme_bw() +
+  labs(x = "Flipper length (mm)", y = "Body mass (g)", title = "Palmer Penguins", color = "Island") +
+  theme(legend.position = c(0.15, 0.75))
+
+penguins_plot
+```
+
+
+
+
+
+
+
 
 
