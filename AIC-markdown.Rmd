@@ -198,6 +198,8 @@ From this, we can say that `peng_lm2` has the highest weight, but that there's a
 
 ### Salamanders
 
+**FOR TROUBLESHOOTING HERE --> below, why are cover and mined popping up as NA? an artifact of the model selection? something about the data? I'm not sure**
+
 Now let's try this with a different example, the one that Ana and Tatum used last week with GLMs. 
 The Salamander dataset (`glmmTMB` package) from a paper on the effects of mountaintop removal on salamanders in streams ([Price et al. 2015](https://besjournals.onlinelibrary.wiley.com/doi/full/10.1111/1365-2664.12585)). 
 
@@ -293,8 +295,6 @@ Effect size plots for site, sample, and DOY:
 effect_plot(model= best.model, pred=site)
 effect_plot(model= best.model, pred=sample)
 effect_plot(model= best.model, pred=DOY)
-```
-
 ```
 
 
