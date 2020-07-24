@@ -15,6 +15,9 @@ library(glmmTMB) # to get the Salamanders dataset
 library(tidyverse) # to make your life easier
 library(gt) # to render a table
 library(patchwork) # to put plots together
+library(effects) #install.packages("effects")
+library(jtools)
+
 
 data(Salamanders)
 
@@ -193,6 +196,105 @@ weights
 From this, we can say that `peng_lm2` has the highest weight, but that there's a 35% chance that `peng_lm1` is the best model, and that there is a 6% chance that `peng_lm3` is the best model.
 
 
+### Salamanders
 
+**FOR TROUBLESHOOTING HERE --> below, why are cover and mined popping up as NA? an artifact of the model selection? something about the data? I'm not sure**
+
+Now let's try this with a different example, the one that Ana and Tatum used last week with GLMs. 
+The Salamander dataset (`glmmTMB` package) from a paper on the effects of mountaintop removal on salamanders in streams ([Price et al. 2015](https://besjournals.onlinelibrary.wiley.com/doi/full/10.1111/1365-2664.12585)). 
+
+The dataset structure:  
+
+```{r echo=FALSE, include=FALSE}
+str(Salamanders)
+```
+
+
+**site**: location where repeated samples were taken (23 sites)
+
+**mined**: factor indicating whether the site was affected by mountain top removal coal mining (yes/no)
+
+**cover**: amount of cover objects in the stream (scaled) 
+
+**sample**: repeated sample
+
+**DOP**: Days since precipitation (scaled)
+
+**Wtemp**: water temperature (scaled)
+
+**DOY**: day of year (scaled)
+
+**spp**: abbreviated species and life stage in some cases (17 spp/life stage combos)
+
+**count**: number of salamanders observed  
+
+#### a. Preliminary predictors
+
+For questions involving many predictors, reducing correlation among predictors by droping some predictors would be a win-win, in the sense of avoiding collinearity and also having fewer parameters (Edwards, L. 16)
+
+For the sake of simplifying this example, we are going to pretend that there are no species or life stages of salamanders, and that they are all the same. 
+
+They assume salamanders behave independently within and between sampling occasions.
+
+```{r}
+pairs(~ cover + DOP + DOY+  Wtemp, data=Salamanders)
+```
+There doesn't appear to be any strong correlations between predictors here, so we are left with sample, site, whether the site was mined, cover, DOP, Wtemp, and DOY.
+
+#### b. Choosing the best model
+
+This is our model:
+```{r}
+big.model <- glm(count ~ site + sample + cover + mined + DOP + DOY + Wtemp, data=Salamanders, family="poisson", na.action = na.pass)
+#na.action=na.pass is necessary for the building-all-models function
+```
+
+We could manually include every possible combination of factors, but no one has that kind of time. Luckily, there's a package that is here to help! 
+
+For this, we use the package `MuMIn` which is useful for excluding/including each predictor when you're dealing with a model that has many predictors. 
+
+```{r}
+library(MuMIn) #install.packages("MuMIn")
+```
+
+
+```{r}
+sal.dredge <- dredge(big.model)
+#this makes all the possible models that are subsets of big.model
+```
+
+Now let's look at all our models using `model.sel(sal.dredge)`. It's a huge table so we have filtered. out to show only models that have $\Delta$ AIC < 3, all ranked by AIC.  
+```{r}
+model.sel(sal.dredge) %>% filter(delta < 3) %>% 
+  gt() %>% 
+  tab_header(title="all model subsets",
+             subtitle = "count ~ site + sample + cover + mined + DOP               + DOY + Wtemp")
+```
+Looks like the best model includes `DOY`, `sample`, and `site` as predictors for salamander abundance. 
+
+So now what? 
+
+Edwards suggests three options. 
+
+A) Go off the best (top) model and state that DOY, sample, and site are all important, report effect sizes from this model. 
+*but, if we look at the table we see that there are many models with similar weights.*
+
+B) Use the best (top) model and do LRTs on the predictors to test for `significance.` 
+*but, 1) combining information criteria and null hypothesis tests is not good since they are fundamentally different and results in scary monsters and angry reviewers.* 
+
+*2) it could be seen as data-dredging by doing null-hypothesis tests on predictors that we already know have some pattern in the data*
+
+C) Note that there are many models with similar weights, and that DOY, sample, and site are all in most of the best models so they have support from the data. Use the best model to report coefficient/effect size plots/etc. 
+
+```{r}
+best.model <- glm(count ~ site + sample +DOY, data=Salamanders, family="poisson")
+```
+
+Effect size plots for site, sample, and DOY:  
+```{r}
+effect_plot(model= best.model, pred=site)
+effect_plot(model= best.model, pred=sample)
+effect_plot(model= best.model, pred=DOY)
+```
 
 
