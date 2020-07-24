@@ -16,6 +16,7 @@ library(tidyverse) # to make your life easier
 library(gt) # to render a table
 library(patchwork) # to put plots together
 library(effects) #install.packages("effects")
+library(jtools)
 
 
 data(Salamanders)
@@ -260,13 +261,40 @@ sal.dredge <- dredge(big.model)
 #this makes all the possible models that are subsets of big.model
 ```
 
-Now let's look at all our models using `model.sel(sal.dredge)`. It's a huge table so we have filtered. out to show only models that have $\Delta$ AIC < 3. 
+Now let's look at all our models using `model.sel(sal.dredge)`. It's a huge table so we have filtered. out to show only models that have $\Delta$ AIC < 3, all ranked by AIC.  
 ```{r}
 model.sel(sal.dredge) %>% filter(delta < 3) %>% 
   gt() %>% 
   tab_header(title="all model subsets",
              subtitle = "count ~ site + sample + cover + mined + DOP               + DOY + Wtemp")
 ```
-They're ranked by AICc 
+Looks like the best model includes `DOY`, `sample`, and `site` as predictors for salamander abundance. 
+
+So now what? 
+
+Edwards suggests three options. 
+
+A) Go off the best (top) model and state that DOY, sample, and site are all important, report effect sizes from this model. 
+*but, if we look at the table we see that there are many models with similar weights.*
+
+B) Use the best (top) model and do LRTs on the predictors to test for `significance.` 
+*but, 1) combining information criteria and null hypothesis tests is not good since they are fundamentally different and results in scary monsters and angry reviewers.* 
+
+*2) it could be seen as data-dredging by doing null-hypothesis tests on predictors that we already know have some pattern in the data*
+
+C) Note that there are many models with similar weights, and that DOY, sample, and site are all in most of the best models so they have support from the data. Use the best model to report coefficient/effect size plots/etc. 
+
+```{r}
+best.model <- glm(count ~ site + sample +DOY, data=Salamanders, family="poisson")
+```
+
+Effect size plots for site, sample, and DOY:  
+```{r}
+effect_plot(model= best.model, pred=site)
+effect_plot(model= best.model, pred=sample)
+effect_plot(model= best.model, pred=DOY)
+```
+
+```
 
 
