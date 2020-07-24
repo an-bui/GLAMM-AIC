@@ -257,17 +257,18 @@ library(MuMIn) #install.packages("MuMIn")
 ```
 
 
-```{r}
+```{r echo=FALSE}
 sal.dredge <- dredge(big.model)
 #this makes all the possible models that are subsets of big.model
 ```
 
 Now let's look at all our models using `model.sel(sal.dredge)`. It's a huge table so we have filtered. out to show only models that have $\Delta$ AIC < 3, all ranked by AIC.  
-```{r}
+
+```{r echo=FALSE}
 model.sel(sal.dredge) %>% filter(delta < 3) %>% 
   gt() %>% 
   tab_header(title="all model subsets",
-             subtitle = "count ~ site + sample + cover + mined + DOP               + DOY + Wtemp")
+             subtitle = "count ~ site + sample + cover + mined + DOP + DOY + Wtemp")
 ```
 Looks like the best model includes `DOY`, `sample`, and `site` as predictors for salamander abundance. 
 
