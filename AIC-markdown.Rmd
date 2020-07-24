@@ -190,7 +190,7 @@ weights <- tribble(
 weights
 ```
 
-From this, we can say that `peng_lm2` has the highest weight, but that there's a 35% chance that `peng_lm1` is the best model, and that there is a 6% chance that `peng_lm3` is the best model. 
+From this, we can say that `peng_lm2` has the highest weight, but that there's a 35% chance that `peng_lm1` is the best model, and that there is a 6% chance that `peng_lm3` is the best model.
 
 
 
